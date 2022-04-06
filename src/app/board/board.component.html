@@ -1,0 +1,5 @@
+<div>
+    <app-zone-jeu-joueur [disabled]="actifPlayer !== player1" [cards]="player1.cards" (selectedCard)="cardToUse($event)"></app-zone-jeu-joueur>
+    <app-plateau [piles]="board.piles" [nextMove]="nextCard" (cardUsedEvent)="removeCard($event)" (endTurnEvent)="endTurn()"></app-plateau>
+    <app-zone-jeu-joueur [disabled]="actifPlayer !== player2" [cards]="player2.cards" (selectedCard)="cardToUse($event)"></app-zone-jeu-joueur>
+</div>

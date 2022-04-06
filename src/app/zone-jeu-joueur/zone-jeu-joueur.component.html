@@ -1,0 +1,5 @@
+<div id="p2" class="hand">
+    <p [ngClass]="{disabled: disabled}" class="card" *ngFor="let card of cards" (click)="selectCard(card)">
+        {{card.value}}
+    </p>
+</div>

@@ -1,0 +1,13 @@
+<div id="board">
+  <div class="pile" *ngFor="let pile of piles">
+    <p class="title">{{ pile.direction }}</p>
+    <div class="cards-wrapper" (click)="addCardToPile(pile)">
+        <ng-container *ngIf="pile.cards.length > 0">
+            <p class="card">
+              {{ pile.cards[pile.cards.length - 1].value }}
+            </p>
+        </ng-container>
+    </div>
+  </div>
+  <button class="end-turn-action" mat-stroked-button color="primary" (click)="endTurn()">FINIR LE TOUR</button>
+</div>
