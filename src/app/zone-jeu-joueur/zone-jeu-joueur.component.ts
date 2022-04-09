@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Card } from 'src/models/card';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
+import { Player } from 'src/models/player';
 
 
 @Component({
@@ -10,8 +11,7 @@ import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag
 })
 export class ZoneJeuJoueurComponent implements OnInit {
 
-  @Input() cards: Card[];
-  @Input() disabled: boolean;
+  @Input() player: Player | null;
 
   @Output() selectedCard = new EventEmitter();
   constructor() { }
@@ -20,7 +20,7 @@ export class ZoneJeuJoueurComponent implements OnInit {
   }
 
   selectCard(card: Card) {
-    if (!this.disabled) {
+    if (this.player?.isPlaying) {      
       this.selectedCard.emit(card)
     }
   }

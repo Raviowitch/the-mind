@@ -1,4 +1,5 @@
 <div id="board">
+  <div class="cardsToDraw">Cartes restantes :<strong>{{cardsRemaining}}</strong></div>
   <div class="pile" *ngFor="let pile of piles">
     <p class="title">{{ pile.direction }}</p>
     <div class="cards-wrapper" (click)="addCardToPile(pile)">

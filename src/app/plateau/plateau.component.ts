@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Observable } from 'rxjs';
 import { Card } from 'src/models/card';
 import { Pile } from 'src/models/pile';
+import { GameService } from '../game.service';
 
 @Component({
   selector: 'app-plateau',
@@ -8,31 +10,43 @@ import { Pile } from 'src/models/pile';
   styleUrls: ['./plateau.component.scss'],
 })
 export class PlateauComponent implements OnInit {
-  @Input() piles: Pile[];
-  @Input() nextMove: Card | null;
+
   @Output() cardUsedEvent = new EventEmitter();
   @Output() endTurnEvent = new EventEmitter();
 
-  constructor() {}
+  public piles: Pile[];
+  public cardSelected: Card | null;
+  public cardsRemaining: number;
 
-  ngOnInit(): void {}
+  constructor(private gameService: GameService) {}
+
+  ngOnInit(): void {
+    this.gameService.nextCard$.subscribe(card => {
+      this.cardSelected = card;
+    });
+
+    this.gameService.getBoard().subscribe(board => {
+      this.cardsRemaining = board.cards.filter(card => !card.used).length;
+      this.piles = board.piles;
+    });
+  }
 
   addCardToPile(pile: Pile) {
-    if (this.nextMove) {
+    if (this.cardSelected) {      
       if (pile.cards.length === 0) {
         this.addCard(pile);
       } else {
         const lastCardVisible: Card = pile.cards[pile.cards.length - 1];
         if (
           (pile.direction === 'UP' &&
-          lastCardVisible.value < this.nextMove.value) ||
-          lastCardVisible.value === this.nextMove.value + 10
+          lastCardVisible.value < this.cardSelected.value) ||
+          lastCardVisible.value === this.cardSelected.value + 10
         ) {
           this.addCard(pile);
         } else if (
           pile.direction === 'DOWN' &&
-          (lastCardVisible.value > this.nextMove.value ||
-            lastCardVisible.value === this.nextMove.value - 10)
+          (lastCardVisible.value > this.cardSelected.value ||
+            lastCardVisible.value === this.cardSelected.value - 10)
         ) {
           this.addCard(pile);
         }
@@ -45,10 +59,10 @@ export class PlateauComponent implements OnInit {
   }
 
   private addCard(pile: Pile) {
-    if (this.nextMove) {
-      pile.cards.push(this.nextMove);
-      this.cardUsedEvent.emit(this.nextMove);
-      this.nextMove = null;
+    if (this.cardSelected) {      
+      pile.cards.push(this.cardSelected);
+      this.cardUsedEvent.emit(this.cardSelected);
+      this.cardSelected = null;
     }
   }
 }

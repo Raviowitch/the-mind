@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
 import { Board } from 'src/models/board.model';
 import { Card } from 'src/models/card';
 import { Pile } from 'src/models/pile';
 import { Player } from 'src/models/player';
+import { GameService } from '../game.service';
 
-const CARD_TO_PLAY_BY_TURN = 2;
-const CARD_BY_HAND = 5;
 
 @Component({
   selector: 'app-board',
@@ -13,101 +13,26 @@ const CARD_BY_HAND = 5;
   styleUrls: ['./board.component.scss'],
 })
 export class BoardComponent implements OnInit {
-  public board: Board;
-  public player1: Player;
-  public player2: Player;
-  public nextCard: Card;
-  public actifPlayer: Player;
-  constructor() {
-    this.board = {
-      cards: this.generateAllCards(),
-      piles: this.generateAllPiles(),
-    } as Board;
-    this.player1 = {
-      id: 'P1',
-      name: 'Hélèna',
-      cards: this.giveHand(),
-      cardUsedInLastTurn: 0
-    } as Player;
-    this.player2 = {
-      id: 'P2',
-      name: 'Mathieu',
-      cards: this.giveHand(),
-      cardUsedInLastTurn: 0
-    } as Player;
+  public player1$: Observable<Player> = new Observable();
+  public player2$: Observable<Player> = new Observable();
+  public actifPlayer$: Observable<Player>;
 
-    this.actifPlayer = this.player1;
+  constructor(private gameService: GameService) {
+    this.player1$ = this.gameService.getPlayer1();
+    this.player2$ = this.gameService.getPlayer2();
   }
 
   ngOnInit(): void {}
 
-  generateAllCards() {
-    var cards: Card[] = [];
-    [...Array(104)].map((_, i) => {
-      cards.push({ used: false, value: i + 1 } as Card);
-    });
-    return cards;
-  }
-  generateAllPiles() {
-    var piles: Pile[] = [];
-    [...Array(4)].map((_, i) => {
-      if (i < 2) {
-        piles.push({ direction: 'UP', cards: [] } as Pile);
-      } else {
-        piles.push({ direction: 'DOWN', cards: [] } as Pile);
-      }
-    });
-    return piles;
-  }
-
-  giveHand() {
-    const hand = [];
-    for (let i = 0; i < CARD_BY_HAND; i++) {
-      const cardsNotUsed = this.board.cards.filter((card) => !card.used);
-      if (cardsNotUsed.length > 0) {
-        const nextCard =
-          cardsNotUsed[Math.floor(Math.random() * cardsNotUsed.length)];
-        hand.push(nextCard);
-        nextCard.used = true;
-      }
-    }
-    return hand;
-  }
-
   cardToUse(card: Card) {
-    this.nextCard = card;
-  }
-
-  removeCard(card: Card) {
-    const cardIndex = this.actifPlayer.cards.findIndex(
-      (c) => c.value === card.value
-    );
-    this.actifPlayer.cards.splice(cardIndex, 1);
-    this.actifPlayer.cardUsedInLastTurn++;
+    this.gameService.setCardSeleted(card);
   }
 
   endTurn() {
-    if (this.actifPlayer.cardUsedInLastTurn >= CARD_TO_PLAY_BY_TURN) {
-      while (this.actifPlayer.cards.length < CARD_BY_HAND || this.board.cards.filter((card) => !card.used).length === 0) {
-        this.replaceCard();
-      }
-      this.changeActivePlayer();
-    }
+    this.gameService.endTurn();
   }
 
-  replaceCard() {
-    const cardsNotUsed = this.board.cards.filter((card) => !card.used);
-    if (cardsNotUsed.length > 0) {
-      const nextCard =
-        cardsNotUsed[Math.floor(Math.random() * cardsNotUsed.length)];
-      nextCard.used = true;
-      this.actifPlayer.cards.push(nextCard);
-    }
-  }
-
-  changeActivePlayer() {
-    this.actifPlayer.cardUsedInLastTurn = 0;
-    this.actifPlayer =
-      this.actifPlayer === this.player1 ? this.player2 : this.player1;
+  removeCard(card: Card) {
+    this.gameService.removeCard(card);
   }
 }
