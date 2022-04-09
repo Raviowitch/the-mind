@@ -4,6 +4,9 @@ import { Card } from 'src/models/card';
 import { Pile } from 'src/models/pile';
 import { Player } from 'src/models/player';
 
+const CARD_TO_PLAY_BY_TURN = 2;
+const CARD_BY_HAND = 5;
+
 @Component({
   selector: 'app-board',
   templateUrl: './board.component.html',
@@ -24,11 +27,13 @@ export class BoardComponent implements OnInit {
       id: 'P1',
       name: 'Hélèna',
       cards: this.giveHand(),
+      cardUsedInLastTurn: 0
     } as Player;
     this.player2 = {
       id: 'P2',
       name: 'Mathieu',
       cards: this.giveHand(),
+      cardUsedInLastTurn: 0
     } as Player;
 
     this.actifPlayer = this.player1;
@@ -57,7 +62,7 @@ export class BoardComponent implements OnInit {
 
   giveHand() {
     const hand = [];
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < CARD_BY_HAND; i++) {
       const cardsNotUsed = this.board.cards.filter((card) => !card.used);
       if (cardsNotUsed.length > 0) {
         const nextCard =
@@ -78,13 +83,16 @@ export class BoardComponent implements OnInit {
       (c) => c.value === card.value
     );
     this.actifPlayer.cards.splice(cardIndex, 1);
+    this.actifPlayer.cardUsedInLastTurn++;
   }
 
   endTurn() {
-    while (this.actifPlayer.cards.length < 5 || this.board.cards.filter((card) => !card.used).length === 0) {
-      this.replaceCard();
+    if (this.actifPlayer.cardUsedInLastTurn >= CARD_TO_PLAY_BY_TURN) {
+      while (this.actifPlayer.cards.length < CARD_BY_HAND || this.board.cards.filter((card) => !card.used).length === 0) {
+        this.replaceCard();
+      }
+      this.changeActivePlayer();
     }
-    this.changeActivePlayer();
   }
 
   replaceCard() {
@@ -98,6 +106,7 @@ export class BoardComponent implements OnInit {
   }
 
   changeActivePlayer() {
+    this.actifPlayer.cardUsedInLastTurn = 0;
     this.actifPlayer =
       this.actifPlayer === this.player1 ? this.player2 : this.player1;
   }

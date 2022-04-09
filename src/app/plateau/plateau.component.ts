@@ -36,7 +36,7 @@ export class PlateauComponent implements OnInit {
         ) {
           this.addCard(pile);
         }
-      } 
+      }
     }
   }
 
