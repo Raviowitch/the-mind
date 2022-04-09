@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subject, takeUntil } from 'rxjs';
 import { Card } from 'src/models/card';
 import { Pile } from 'src/models/pile';
 import { GameService } from '../game.service';
@@ -8,22 +9,27 @@ import { GameService } from '../game.service';
   templateUrl: './plateau.component.html',
   styleUrls: ['./plateau.component.scss'],
 })
-export class PlateauComponent implements OnInit {
+export class PlateauComponent implements OnInit, OnDestroy {
   public piles: Pile[];
   public cardSelected: Card | null;
   public cardsRemaining: number;
-
+  private _destroy: Subject<boolean> = new Subject();
   constructor(private gameService: GameService) {}
 
   ngOnInit(): void {
-    this.gameService.nextCard$.subscribe(card => {
+    this.gameService.nextCard$.pipe(takeUntil(this._destroy)).subscribe(card => {
       this.cardSelected = card;
     });
 
-    this.gameService.getBoard().subscribe(board => {
+    this.gameService.getBoard().pipe(takeUntil(this._destroy)).subscribe(board => {
       this.cardsRemaining = board.cards.filter(card => !card.used).length;
       this.piles = board.piles;
     });
+  }
+
+  ngOnDestroy(): void {
+    this._destroy.next(true);
+    this._destroy.unsubscribe();
   }
 
   endTurn() {

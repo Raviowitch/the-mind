@@ -12,7 +12,6 @@ import { GameService } from '../game.service';
 export class BoardComponent implements OnInit {
   public player1$: Observable<Player> = new Observable();
   public player2$: Observable<Player> = new Observable();
-  public actifPlayer$: Observable<Player>;
 
   constructor(private gameService: GameService) {
     this.player1$ = this.gameService.getPlayer1();
