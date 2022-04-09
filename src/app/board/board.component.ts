@@ -1,8 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Board } from 'src/models/board.model';
-import { Card } from 'src/models/card';
-import { Pile } from 'src/models/pile';
 import { Player } from 'src/models/player';
 import { GameService } from '../game.service';
 
@@ -23,16 +20,4 @@ export class BoardComponent implements OnInit {
   }
 
   ngOnInit(): void {}
-
-  cardToUse(card: Card) {
-    this.gameService.setCardSeleted(card);
-  }
-
-  endTurn() {
-    this.gameService.endTurn();
-  }
-
-  removeCard(card: Card) {
-    this.gameService.removeCard(card);
-  }
 }

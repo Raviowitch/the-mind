@@ -1,27 +1,23 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Card } from 'src/models/card';
-import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 import { Player } from 'src/models/player';
-
+import { GameService } from '../game.service';
 
 @Component({
   selector: 'app-zone-jeu-joueur',
   templateUrl: './zone-jeu-joueur.component.html',
-  styleUrls: ['./zone-jeu-joueur.component.scss']
+  styleUrls: ['./zone-jeu-joueur.component.scss'],
 })
 export class ZoneJeuJoueurComponent implements OnInit {
-
   @Input() player: Player | null;
 
-  @Output() selectedCard = new EventEmitter();
-  constructor() { }
+  constructor(private gameService: GameService) {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   selectCard(card: Card) {
-    if (this.player?.isPlaying) {      
-      this.selectedCard.emit(card)
+    if (this.player?.isPlaying) {
+      this.gameService.setCardSeleted(card);
     }
   }
 }

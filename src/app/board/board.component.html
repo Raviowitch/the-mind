@@ -1,5 +1,5 @@
 <div>
-    <app-zone-jeu-joueur [player]="player1$ | async" (selectedCard)="cardToUse($event)"></app-zone-jeu-joueur>
-    <app-plateau (cardUsedEvent)="removeCard($event)" (endTurnEvent)="endTurn()"></app-plateau>
-    <app-zone-jeu-joueur [player]="player2$ | async" (selectedCard)="cardToUse($event)"></app-zone-jeu-joueur>
+    <app-zone-jeu-joueur [player]="player1$ | async"></app-zone-jeu-joueur>
+    <app-plateau></app-plateau>
+    <app-zone-jeu-joueur [player]="player2$ | async"></app-zone-jeu-joueur>
 </div>

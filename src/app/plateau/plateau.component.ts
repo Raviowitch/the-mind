@@ -1,5 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
 import { Card } from 'src/models/card';
 import { Pile } from 'src/models/pile';
 import { GameService } from '../game.service';
@@ -10,10 +9,6 @@ import { GameService } from '../game.service';
   styleUrls: ['./plateau.component.scss'],
 })
 export class PlateauComponent implements OnInit {
-
-  @Output() cardUsedEvent = new EventEmitter();
-  @Output() endTurnEvent = new EventEmitter();
-
   public piles: Pile[];
   public cardSelected: Card | null;
   public cardsRemaining: number;
@@ -29,6 +24,15 @@ export class PlateauComponent implements OnInit {
       this.cardsRemaining = board.cards.filter(card => !card.used).length;
       this.piles = board.piles;
     });
+  }
+
+  endTurn() {
+    this.gameService.endTurn();
+  }
+
+  removeCardFromHand(card: Card) {
+    this.gameService.removeCard(card);
+    this.cardSelected = null;
   }
 
   addCardToPile(pile: Pile) {
@@ -54,15 +58,10 @@ export class PlateauComponent implements OnInit {
     }
   }
 
-  endTurn() {
-    this.endTurnEvent.emit(true);
-  }
-
   private addCard(pile: Pile) {
     if (this.cardSelected) {      
       pile.cards.push(this.cardSelected);
-      this.cardUsedEvent.emit(this.cardSelected);
-      this.cardSelected = null;
+      this.removeCardFromHand(this.cardSelected);
     }
   }
 }
